@@ -13,37 +13,54 @@ cards = {
 
 
 def pick_a_card(deck: dict):
+    """Picks randomly a card from a deck and remove from it"""
     keys = list(deck)
     key = random.choice(keys)
-    card = random.choice(deck[key])
-    result = (key, card)
+    selected_card = random.choice(deck[key])
+    result = (key, selected_card)
+
+    # Delete from deck:
+    index = deck[key].index(result[-1])
+    deck[key].pop(index)
     return result
 
 
-def remove_card_from_deck(result: tuple, deck: dict):
-    values = deck[result[0]]
-    card_index = values.index(result[-1])
-    deck[result[0]].pop(card_index)
+class User:
+    def __init__(self):
+        self.user_points = 0
 
-
-def game_functionality():
-    pass
+    def add_points(self, points: int):
+        self.user_points += points
 
 
 # Tests:
-card_random = pick_a_card(cards)
-print(f"removed card: {card_random}")
-print(cards[card_random[0]])
-remove_card_from_deck(card_random, cards)
-print(cards[card_random[0]])
-
+# card_random = pick_a_card(cards)
+# print(f"removed card: {card_random}")
+# print(cards[card_random[0]])
+# print(cards[card_random[0]])
 
 if __name__ == '__main__':
     print("Welcome to Blackjack Game")
 
     play = True
+    user = User()
+    cpu = User()
+
+    user_cards = []
+    cpu_cards = []
     while play:
         # Main game functionality:
+        for card in range(2):
+            user_cards.append(pick_a_card(cards))
+            user.add_points(user_cards[card][-1][-1])
+
+            cpu_cards.append(pick_a_card(cards))
+            cpu.add_points(cpu_cards[card][-1][-1])
+
+        # Add points:
+
+        print(user.user_points)
+        print(cpu.user_points)
 
         # New game:
         user_answer = input("New Game? press 'n' to exit ")
