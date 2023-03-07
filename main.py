@@ -28,9 +28,20 @@ def pick_a_card(deck: dict):
 class User:
     def __init__(self):
         self.user_points = 0
+        self.cards = []
 
-    def add_points(self, points: int):
-        self.user_points += points
+    def add_points(self, new_card: tuple):
+        self.cards.append(new_card)
+        if new_card[1][0] == 'Ace':
+            pass
+        else:
+            self.user_points += new_card[1][1]
+
+    def show_cards(self):
+        print(self.cards)
+
+    def __repr__(self):
+        return self.cards
 
 
 # Tests:
@@ -46,23 +57,25 @@ if __name__ == '__main__':
     user = User()
     cpu = User()
 
-    user_cards = []
-    cpu_cards = []
     while play:
         # Main game functionality:
         for card in range(2):
-            user_cards.append(pick_a_card(cards))
-            user.add_points(user_cards[card][-1][-1])
+            user_new_card = pick_a_card(cards)
+            user.add_points(user_new_card)
 
-            cpu_cards.append(pick_a_card(cards))
-            cpu.add_points(cpu_cards[card][-1][-1])
+            cpu_new_card = pick_a_card(cards)
+            cpu.add_points(cpu_new_card)
 
         # Add points:
 
         print(user.user_points)
         print(cpu.user_points)
+        user.show_cards()
 
         # New game:
         user_answer = input("New Game? press 'n' to exit ")
         if user_answer == 'n':
             play = False
+        else:
+            user.user_points = 0
+            cpu.user_points = 0
