@@ -30,15 +30,15 @@ class User:
         self.user_points = 0
         self.cards = []
 
-    def add_points(self, new_card: tuple):
-        self.cards.append(new_card)
-        if new_card[1][0] == 'Ace':
+    def add_points(self, card_picked: tuple):
+        self.cards.append(card_picked)
+        if card_picked[1][0] == 'Ace':
             pass
         else:
-            self.user_points += new_card[1][1]
+            self.user_points += card_picked[1][1]
 
     def show_cards(self):
-        print(self.cards)
+        print(f"{self.cards} points: {self.user_points}")
 
     def __repr__(self):
         return self.cards
@@ -57,6 +57,7 @@ if __name__ == '__main__':
     user = User()
     cpu = User()
 
+    winner = False
     while play:
         # Main game functionality:
         for card in range(2):
@@ -71,6 +72,26 @@ if __name__ == '__main__':
         print(user.user_points)
         print(cpu.user_points)
         user.show_cards()
+
+        if user.user_points == 21 or cpu.user_points == 21:
+            winner = True
+
+        while not winner:
+            if cpu.user_points <= 17:
+                cpu.add_points(pick_a_card(cards))
+
+            new_card = input('New card? type y, any other key to pass ')
+            if new_card == 'y':
+                user.add_points(pick_a_card(cards))
+                user.show_cards()
+            else:
+                if user.user_points > cpu.user_points:
+                    print("User wins")
+                elif user.user_points == cpu.user_points:
+                    print("Game tie")
+                else:
+                    print("Cpu wins")
+                winner = True
 
         # New game:
         user_answer = input("New Game? press 'n' to exit ")
