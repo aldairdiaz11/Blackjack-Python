@@ -33,9 +33,15 @@ class User:
     def add_points(self, card_picked: tuple):
         self.cards.append(card_picked)
         if card_picked[1][0] == 'Ace':
-            pass
+            if self.user_points > 21:
+                self.user_points += 1
+            else:
+                self.user_points += 11
         else:
             self.user_points += card_picked[1][1]
+
+        if ("Ace", 11, 1) in self.cards and self.user_points > 21:
+            self.user_points -= 11 * self.cards.count(("Ace", 11, 1))
 
     def show_cards(self):
         print(f"{self.cards} points: {self.user_points}")
@@ -67,30 +73,41 @@ if __name__ == '__main__':
             cpu_new_card = pick_a_card(cards)
             cpu.add_points(cpu_new_card)
 
-        # Add points:
-
-        print(user.user_points)
-        print(cpu.user_points)
+        # Show first cards:
+        print(cpu.cards[0])
         user.show_cards()
 
         if user.user_points == 21 or cpu.user_points == 21:
-            winner = True
+            winner = 'CPU'
 
         while not winner:
             if cpu.user_points <= 17:
                 cpu.add_points(pick_a_card(cards))
+                if cpu.user_points > 21:
+                    print("User wins")
+                    cpu.show_cards()
+                    winner = True
 
             new_card = input('New card? type y, any other key to pass ')
             if new_card == 'y':
                 user.add_points(pick_a_card(cards))
                 user.show_cards()
+
+                if user.user_points == 21:
+                    print("User wins")
+                    winner = True
+                elif user.user_points > 21:
+                    print("User lose")
+                    winner = True
             else:
                 if user.user_points > cpu.user_points:
                     print("User wins")
                 elif user.user_points == cpu.user_points:
                     print("Game tie")
+                    cpu.show_cards()
                 else:
                     print("Cpu wins")
+                    cpu.show_cards()
                 winner = True
 
         # New game:
@@ -98,5 +115,8 @@ if __name__ == '__main__':
         if user_answer == 'n':
             play = False
         else:
+            print("\n\n")
+            winner = False
+            user.cards = []
             user.user_points = 0
             cpu.user_points = 0
