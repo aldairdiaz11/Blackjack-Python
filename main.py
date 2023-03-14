@@ -26,9 +26,10 @@ def pick_a_card(deck: dict):
 
 
 class User:
-    def __init__(self):
+    def __init__(self, name: str):
         self.user_points = 0
         self.cards = []
+        self.user_name = name
 
     def add_points(self, card_picked: tuple):
         self.cards.append(card_picked)
@@ -43,8 +44,12 @@ class User:
         if ("Ace", 11, 1) in self.cards and self.user_points > 21:
             self.user_points -= 11 * self.cards.count(("Ace", 11, 1))
 
+    def restart(self):
+        self.user_points = 0
+        self.cards = []
+
     def show_cards(self):
-        print(f"{self.cards} points: {self.user_points}")
+        print(f"{self.user_name}: {self.cards} points: {self.user_points}")
 
     def __repr__(self):
         return self.cards
@@ -60,10 +65,10 @@ if __name__ == '__main__':
     print("Welcome to Blackjack Game")
 
     play = True
-    user = User()
-    cpu = User()
+    user = User('Player 1')
+    cpu = User('CPU')
 
-    winner = False
+    winner = ''
     while play:
         # Main game functionality:
         for card in range(2):
@@ -78,15 +83,17 @@ if __name__ == '__main__':
         user.show_cards()
 
         if user.user_points == 21 or cpu.user_points == 21:
-            winner = 'CPU'
+            if user.user_points > cpu.user_points:
+                winner = user.user_name
+            else:
+                winner = cpu.user_name
 
         while not winner:
             if cpu.user_points <= 17:
                 cpu.add_points(pick_a_card(cards))
                 if cpu.user_points > 21:
-                    print("User wins")
-                    cpu.show_cards()
-                    winner = True
+                    winner = cpu.user_name
+                    continue
 
             new_card = input('New card? type y, any other key to pass ')
             if new_card == 'y':
@@ -94,21 +101,21 @@ if __name__ == '__main__':
                 user.show_cards()
 
                 if user.user_points == 21:
-                    print("User wins")
-                    winner = True
+                    winner = user.user_name
                 elif user.user_points > 21:
-                    print("User lose")
-                    winner = True
+                    winner = cpu.user_name
             else:
                 if user.user_points > cpu.user_points:
-                    print("User wins")
+                    winner = user.user_name
                 elif user.user_points == cpu.user_points:
-                    print("Game tie")
-                    cpu.show_cards()
+                    winner = 'tie'
                 else:
-                    print("Cpu wins")
-                    cpu.show_cards()
-                winner = True
+                    winner = cpu.user_name
+
+        # User winner
+        print(f"\nWinner: {winner}")
+        user.show_cards()
+        cpu.show_cards()
 
         # New game:
         user_answer = input("New Game? press 'n' to exit ")
@@ -116,7 +123,6 @@ if __name__ == '__main__':
             play = False
         else:
             print("\n\n")
-            winner = False
-            user.cards = []
-            user.user_points = 0
-            cpu.user_points = 0
+            winner = ''
+            user.restart()
+            cpu.restart()
